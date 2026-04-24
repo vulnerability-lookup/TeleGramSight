@@ -1,6 +1,9 @@
 # Non-versioned runtime config (holds the private Telegram endpoint + secrets).
 telegramsight/conf.py
 
+# Local assistant notes — must not be committed.
+CLAUDE.md
+
 # Python
 __pycache__/
 *.py[cod]
