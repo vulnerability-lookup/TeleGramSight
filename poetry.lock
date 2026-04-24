@@ -824,6 +824,33 @@ files = [
 ]
 
 [[package]]
+name = "types-dateparser"
+version = "1.4.0.20260408"
+description = "Typing stubs for dateparser"
+optional = false
+python-versions = ">=3.10"
+groups = ["dev"]
+files = [
+    {file = "types_dateparser-1.4.0.20260408-py3-none-any.whl", hash = "sha256:5577e991f416096f6120da15eda076dbcf5f7837565529158e44c8edeba114d0"},
+    {file = "types_dateparser-1.4.0.20260408.tar.gz", hash = "sha256:cb3d23bca24c2a874556c6cfadb229fd3c9ee567263a9c191bd7241f48091e75"},
+]
+
+[[package]]
+name = "types-requests"
+version = "2.33.0.20260408"
+description = "Typing stubs for requests"
+optional = false
+python-versions = ">=3.10"
+groups = ["dev"]
+files = [
+    {file = "types_requests-2.33.0.20260408-py3-none-any.whl", hash = "sha256:81f31d5ea4acb39f03be7bc8bed569ba6d5a9c5d97e89f45ac43d819b68ca50f"},
+    {file = "types_requests-2.33.0.20260408.tar.gz", hash = "sha256:95b9a86376807a216b2fb412b47617b202091c3ea7c078f47cc358d5528ccb7b"},
+]
+
+[package.dependencies]
+urllib3 = ">=2"
+
+[[package]]
 name = "typing-extensions"
 version = "4.15.0"
 description = "Backported and Experimental Type Hints for Python 3.9+"
@@ -872,7 +899,7 @@ version = "2.6.3"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
 python-versions = ">=3.9"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "urllib3-2.6.3-py3-none-any.whl", hash = "sha256:bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4"},
     {file = "urllib3-2.6.3.tar.gz", hash = "sha256:1b62b6884944a57dbe321509ab94fd4d3b307075e0c2eae991ac71ee15ad38ed"},
@@ -887,4 +914,4 @@ zstd = ["backports-zstd (>=1.0.0) ; python_version < \"3.14\""]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "fc83b0453c61af2c95f94c89f2de393f4aa9415fd90523561beb61b5e7d8d5bd"
+content-hash = "e696a15f48c66ba1ad926d034be2b80c4422f19af7704ad0a23bb669ba76e106"
