@@ -139,11 +139,20 @@ def build_sighting(
     if not (vuln_id and chat_id and msg_id and pub_timestamp):
         logger.debug("Skipping result with missing required fields: %s", result)
         return None
+    # PyVulnerabilityLookup.create_sighting inspects .tzinfo on this value,
+    # so it must be a datetime, not the ISO string the upstream API returns.
+    try:
+        creation_timestamp = datetime.fromisoformat(pub_timestamp)
+    except ValueError:
+        logger.debug("Skipping result with unparseable pub_timestamp: %r", pub_timestamp)
+        return None
+    if creation_timestamp.tzinfo is None:
+        creation_timestamp = creation_timestamp.replace(tzinfo=timezone.utc)
     return {
         "type": sighting_type(result),
         "source": f"Telegram/{encrypt_source_fragment(aesgcm, chat_id, msg_id)}",
         "vulnerability": vuln_id,
-        "creation_timestamp": pub_timestamp,
+        "creation_timestamp": creation_timestamp,
     }
 
 
