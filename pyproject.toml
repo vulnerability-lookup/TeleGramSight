@@ -1,9 +1,14 @@
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
 [project]
 name = "TeleGramSight"
 version = "0.1.0"
 description = "Retrieve vulnerability sightings collected from Telegram and push them to a Vulnerability-Lookup instance."
 authors = [
-    {name = "Cédric Bonhomme", email = "cedric@cedricbonhomme.org"}
+    {name = "Cédric Bonhomme", email = "cedric.bonhomme@circl.lu"}
 ]
 license = "GPL-3.0-or-later"
 requires-python = ">=3.10,<4.0"
@@ -13,9 +18,51 @@ dependencies = [
     "cryptography (>=42.0,<46.0)",
 ]
 
+
+[project.urls]
+Homepage = "https://github.com/cedricbonhomme/TeleGramSight"
+Repository = "https://github.com/cedricbonhomme/TeleGramSight"
+Changelog = "https://github.com/cedricbonhomme/TeleGramSight/blob/main/CHANGELOG.md"
+
+
 [project.scripts]
 telegramsight = "telegramsight.main:main"
 
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+requires-poetry = ">=2.0"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Security",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"
+]
+
+
+[tool.mypy]
+python_version = "3.13"
+check_untyped_defs = true
+ignore_errors = false
+ignore_missing_imports = true
+strict_optional = true
+no_implicit_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unreachable = true
+
+show_error_context = true
+pretty = true
+
+exclude = "build|dist|docs"
+
+[tool.isort]
+profile = "black"
