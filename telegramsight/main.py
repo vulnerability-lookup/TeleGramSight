@@ -66,10 +66,10 @@ def encrypt_source_fragment(aesgcm: AESGCM, chat_id: Any, msg_id: Any) -> str:
 
 
 def sighting_type(result: dict[str, Any]) -> str:
-    if result.get("tag_poc"):
-        return "proof_of_concept"
     if result.get("tag_wildusage"):
         return "exploited"
+    if result.get("tag_poc"):
+        return "proof_of_concept"
     return "seen"
 
 
