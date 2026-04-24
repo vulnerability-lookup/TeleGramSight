@@ -1,0 +1,15 @@
+# Non-versioned runtime config (holds the private Telegram endpoint + secrets).
+telegramsight/conf.py
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+build/
+dist/
+
+# Virtualenvs
+.venv/
+venv/
