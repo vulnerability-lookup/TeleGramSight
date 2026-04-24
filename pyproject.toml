@@ -70,5 +70,7 @@ profile = "black"
 
 [dependency-groups]
 dev = [
-    "mypy (>=1.20.2,<2.0.0)"
+    "mypy (>=1.20.2,<2.0.0)",
+    "types-dateparser (>=1.2,<2.0)",
+    "types-requests (>=2.31,<3.0)",
 ]

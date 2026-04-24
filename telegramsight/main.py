@@ -86,11 +86,12 @@ def parse_time(value: str) -> int:
     try:
         parsed = datetime.fromisoformat(value)
     except ValueError:
-        parsed = dateparser.parse(
+        maybe = dateparser.parse(
             value, settings={"RETURN_AS_TIMEZONE_AWARE": True, "TIMEZONE": "UTC"}
         )
-        if parsed is None:
+        if maybe is None:
             raise ValueError(f"Could not parse time value: {value!r}")
+        parsed = maybe
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=timezone.utc)
     return int(parsed.timestamp())
