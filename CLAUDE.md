@@ -11,7 +11,7 @@ Cron-invoked CLI that pulls vulnerability sightings collected by a third-party T
 - Build/packaging: Poetry (`poetry-core >=2.0.0,<3.0.0`), Python `>=3.10,<4.0`.
 - Install for development: `poetry install` (pulls the `dev` dependency group).
 - Install as a user tool: `pipx install TeleGramSight` (exposes the `telegramsight` entry point defined in `[project.scripts]`).
-- Runtime deps: `requests`, `pyvulnerabilitylookup`, `cryptography` (AES-256-GCM), `dateparser` (natural-language `--since`/`--until`).
+- Runtime deps: `requests`, `pyvulnerabilitylookup`, `cryptography` (AES-SIV), `dateparser` (natural-language `--since`/`--until`).
 - Type-check: `poetry run mypy .` — this is the **only** quality gate that CI enforces. `.github/workflows/mypy.yml` runs it on Python 3.11, 3.12, and 3.13 on every push/PR to `main`. The `[tool.mypy]` block in `pyproject.toml` is strict (`strict_optional`, `no_implicit_optional`, `warn_unreachable`, etc.); fix issues at the source rather than adding blanket `# type: ignore`.
 - No test suite is checked in.
 
@@ -27,7 +27,7 @@ Single-file flow in `telegramsight/main.py`:
    - otherwise → `seen`
    (`tag_poc` wins when both are set.)
 4. `build_sighting()` assembles `{type, source=Telegram/{enc}, vulnerability, creation_timestamp}` and `push_sighting()` calls `PyVulnerabilityLookup.create_sighting`.
-   - `{enc}` is AES-256-GCM(`"{chat_id}/{msg_id}"`) under `source_encryption_key`, serialized as urlsafe-base64 of `nonce (12B) || ciphertext || tag (16B)` (padding stripped). A fresh random nonce per sighting means two runs over the same message produce distinct sources — deduping must happen on the decrypted plaintext or upstream.
+   - `{enc}` is AES-SIV(`"{chat_id}/{msg_id}"`) under `source_encryption_key` with no nonce and no associated data, serialized as urlsafe-base64 of `SIV (16B) || ciphertext` (padding stripped). This is *deterministic on purpose*: the same Telegram message always produces the same source string, so Vulnerability-Lookup can dedupe on the ciphertext without decrypting. Key may be 32/48/64 raw bytes (AES-128/192/256-SIV). If you ever need to change the key, all previously-pushed sightings become undiscoverable under the new key.
    - `creation_timestamp` must be a timezone-aware `datetime` (not the raw ISO string from the upstream API) — `create_sighting` inspects `.tzinfo`. Naive timestamps are coerced to UTC.
 
 ## Config split — do not break this

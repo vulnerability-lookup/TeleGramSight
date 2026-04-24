@@ -17,7 +17,7 @@ from typing import Any
 
 import dateparser
 import requests
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.ciphers.aead import AESSIV
 from pyvulnerabilitylookup import PyVulnerabilityLookup
 
 logger = logging.getLogger("telegramsight")
@@ -42,27 +42,32 @@ def load_config() -> ModuleType:
     return module
 
 
-def load_aesgcm(key_b64: str | None) -> AESGCM:
+def load_aessiv(key_b64: str | None) -> AESSIV:
     if not key_b64:
         raise RuntimeError("source_encryption_key must be set in the config")
     # Accept both padded and unpadded urlsafe-base64.
     padded = key_b64 + "=" * (-len(key_b64) % 4)
     key = base64.urlsafe_b64decode(padded)
-    if len(key) != 32:
+    if len(key) not in (32, 48, 64):
         raise RuntimeError(
-            f"source_encryption_key must decode to 32 bytes (got {len(key)})"
+            "source_encryption_key must decode to 32, 48, or 64 bytes "
+            f"(got {len(key)})"
         )
-    return AESGCM(key)
+    return AESSIV(key)
 
 
-def encrypt_source_fragment(aesgcm: AESGCM, chat_id: Any, msg_id: Any) -> str:
-    """AES-256-GCM encrypt `{chat_id}/{msg_id}` with a fresh 12-byte nonce.
+def encrypt_source_fragment(aessiv: AESSIV, chat_id: Any, msg_id: Any) -> str:
+    """Deterministic AES-SIV encrypt of `{chat_id}/{msg_id}`.
 
-    Returns urlsafe-base64(nonce || ciphertext || tag), padding stripped.
+    AES-SIV is used with no nonce and no associated data, so the output is
+    a pure function of (key, plaintext) — the same message always produces
+    the same source string, which lets Vulnerability-Lookup dedupe on the
+    ciphertext without decrypting.
+
+    Returns urlsafe-base64 of the SIV-prefixed ciphertext, padding stripped.
     """
-    nonce = os.urandom(12)
-    ciphertext = aesgcm.encrypt(nonce, f"{chat_id}/{msg_id}".encode(), None)
-    return base64.urlsafe_b64encode(nonce + ciphertext).decode().rstrip("=")
+    ciphertext = aessiv.encrypt(f"{chat_id}/{msg_id}".encode(), None)
+    return base64.urlsafe_b64encode(ciphertext).decode().rstrip("=")
 
 
 def sighting_type(result: dict[str, Any]) -> str:
@@ -131,7 +136,7 @@ def iter_results(
 
 
 def build_sighting(
-    aesgcm: AESGCM, result: dict[str, Any]
+    aessiv: AESSIV, result: dict[str, Any]
 ) -> dict[str, Any] | None:
     vuln_id = result.get("vuln_id")
     chat_id = result.get("chat_id")
@@ -151,7 +156,7 @@ def build_sighting(
         creation_timestamp = creation_timestamp.replace(tzinfo=timezone.utc)
     return {
         "type": sighting_type(result),
-        "source": f"Telegram/{encrypt_source_fragment(aesgcm, chat_id, msg_id)}",
+        "source": f"Telegram/{encrypt_source_fragment(aessiv, chat_id, msg_id)}",
         "vulnerability": vuln_id,
         "creation_timestamp": creation_timestamp,
     }
@@ -228,7 +233,7 @@ def main(argv: list[str] | None = None) -> int:
         logger.error("--since (%d) must be earlier than --until (%d)", since, until)
         return 2
 
-    aesgcm = load_aesgcm(getattr(config, "source_encryption_key", None))
+    aessiv = load_aessiv(getattr(config, "source_encryption_key", None))
     client = (
         None
         if args.no_push
@@ -248,7 +253,7 @@ def main(argv: list[str] | None = None) -> int:
         args.page_size,
     ):
         seen += 1
-        sighting = build_sighting(aesgcm, result)
+        sighting = build_sighting(aessiv, result)
         if sighting is None:
             continue
         if client is None:

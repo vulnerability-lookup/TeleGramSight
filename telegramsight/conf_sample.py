@@ -7,9 +7,11 @@ api_key = ""
 vulnerability_lookup_base_url = "https://vulnerability.circl.lu/"
 vulnerability_auth_token = ""
 
-# AES-256-GCM key used to encrypt the chat_id/msg_id fragment of the sighting
-# source. 32 raw bytes, urlsafe-base64 encoded. Generate with:
-#   python -c "import base64, os; print(base64.urlsafe_b64encode(os.urandom(32)).decode().rstrip('='))"
+# AES-SIV key used to deterministically encrypt the chat_id/msg_id fragment
+# of the sighting source. urlsafe-base64 of 32, 48, or 64 raw bytes
+# (AES-128-SIV, AES-192-SIV, AES-256-SIV respectively). Generate a 64-byte
+# (AES-256-SIV) key with:
+#   python -c "import base64, os; print(base64.urlsafe_b64encode(os.urandom(64)).decode().rstrip('='))"
 source_encryption_key = ""
 
 # Heartbeat mechanism

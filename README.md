@@ -48,10 +48,15 @@ Cron example (every hour):
 
 ## Security
 
-Sighting sources are encrypted with AES-256-GCM using the `source_encryption_key`
-set in your configuration file. AES-256 retains an estimated ~128-bit security
-margin against known quantum attacks (Grover's algorithm), but the tool itself
-has not been independently audited or certified.
+Sighting sources are encrypted with AES-SIV (RFC 5297) using the
+`source_encryption_key` set in your configuration file. AES-SIV is used
+deterministically (no nonce, no associated data) so that the same Telegram
+message always produces the same source string, which lets Vulnerability-Lookup
+deduplicate on the ciphertext without decrypting it. The key may be 32, 48, or
+64 bytes (AES-128/192/256-SIV); 64 bytes is recommended for new deployments.
+AES-256 retains an estimated ~128-bit security margin against known quantum
+attacks (Grover's algorithm), but the tool itself has not been independently
+audited or certified.
 
 ## License
 
