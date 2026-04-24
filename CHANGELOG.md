@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-04-24
+
+### Fixed
+
+- `creation_timestamp` is now passed to `PyVulnerabilityLookup.create_sighting`
+  as a timezone-aware `datetime` instead of the raw ISO 8601 string returned
+  by the upstream API, avoiding a `'str' object has no attribute 'tzinfo'`
+  error that caused every sighting push to fail.
+
 ## [0.1.0] - 2026-04-24
 
 Initial release.
@@ -30,4 +39,5 @@ Initial release.
   and a gitignored `telegramsight/conf.py`; the runtime config path is
   resolved from the `TeleGramSight_CONFIG` environment variable.
 
+[0.1.1]: https://github.com/cedricbonhomme/TeleGramSight/releases/tag/v0.1.1
 [0.1.0]: https://github.com/cedricbonhomme/TeleGramSight/releases/tag/v0.1.0
