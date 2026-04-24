@@ -212,8 +212,8 @@ def main(argv: list[str] | None = None) -> int:
     pushed = 0
     seen = 0
     for result in iter_results(
-        config.telegram_api_url,
-        config.telegram_api_key,
+        config.api_url,
+        config.api_key,
         since,
         until,
         args.page_size,

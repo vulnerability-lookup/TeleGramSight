@@ -1,8 +1,8 @@
 # Telegram sightings source.
 # Do NOT commit the real URL or api_key — keep them in your non-versioned
 # conf.py (pointed at by the TeleGramSight_CONFIG environment variable).
-telegram_api_url = ""
-telegram_api_key = ""
+api_url = ""
+api_key = ""
 
 vulnerability_lookup_base_url = "https://vulnerability.circl.lu/"
 vulnerability_auth_token = ""

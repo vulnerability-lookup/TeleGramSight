@@ -1,6 +1,6 @@
 # TeleGramSight
 
-A client that retrieves vulnerability observations from Telegram and pushes them to a
+A client that retrieves vulnerability observations from a Telegram collector and pushes them to a
 [Vulnerability-Lookup](https://github.com/vulnerability-lookup/vulnerability-lookup) instance.
 
 
