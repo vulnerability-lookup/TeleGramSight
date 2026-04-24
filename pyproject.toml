@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "TeleGramSight"
-version = "0.1.1"
+version = "0.2.0"
 description = "Retrieve vulnerability sightings collected from Telegram and push them to a Vulnerability-Lookup instance."
 authors = [
     {name = "Cédric Bonhomme", email = "cedric.bonhomme@circl.lu"}

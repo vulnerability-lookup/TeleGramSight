@@ -22,10 +22,10 @@ Single-file flow in `telegramsight/main.py`:
 1. `load_config()` reads the Python file pointed at by `TeleGramSight_CONFIG` — the env var name is mixed-case and matches the one in the README; don't normalise it.
 2. `iter_results()` POSTs to `{api_url}/api/get_cve_objs` with `tag_llm=True`, paginating via `page`/`page_size` until `page * page_size >= total`.
 3. `sighting_type()` maps Telegram tags to a Vulnerability-Lookup sighting type:
-   - `tag_poc` → `proof_of_concept`
    - `tag_wildusage` → `exploited`
+   - `tag_poc` → `proof_of_concept`
    - otherwise → `seen`
-   (`tag_poc` wins when both are set.)
+   (`tag_wildusage` wins when both are set — checked first.)
 4. `build_sighting()` assembles `{type, source=Telegram/{enc}, vulnerability, creation_timestamp}` and `push_sighting()` calls `PyVulnerabilityLookup.create_sighting`.
    - `{enc}` is AES-SIV(`"{chat_id}/{msg_id}"`) under `source_encryption_key` with no nonce and no associated data, serialized as urlsafe-base64 of `SIV (16B) || ciphertext` (padding stripped). This is *deterministic on purpose*: the same Telegram message always produces the same source string, so Vulnerability-Lookup can dedupe on the ciphertext without decrypting. Key may be 32/48/64 raw bytes (AES-128/192/256-SIV). If you ever need to change the key, all previously-pushed sightings become undiscoverable under the new key.
    - `creation_timestamp` must be a timezone-aware `datetime` (not the raw ISO string from the upstream API) — `create_sighting` inspects `.tzinfo`. Naive timestamps are coerced to UTC.

@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-04-24
+
+### Changed
+
+- Source-fragment encryption switched from AES-256-GCM to **AES-SIV**
+  (RFC 5297), invoked deterministically with no nonce and no associated
+  data. The same Telegram message now always produces the same
+  `Telegram/<ciphertext>` source string, so Vulnerability-Lookup can
+  deduplicate on the ciphertext without having to decrypt it. Plaintext
+  is still recoverable with the key. `source_encryption_key` accepts
+  32-, 48-, or 64-byte keys (AES-128/192/256-SIV); 64 bytes is
+  recommended for new deployments. **Migration note:** source strings
+  pushed by 0.1.x (AES-GCM with a per-record random nonce) will not
+  dedupe against strings produced by 0.2.0 for the same underlying
+  message.
+- Telegram-tag precedence inverted: `tag_wildusage` (→ `exploited`) now
+  wins over `tag_poc` (→ `proof_of_concept`) when both are set.
+
+### Dependencies
+
+- Bumped `cryptography` from 45.0.7 to 46.0.7.
+
 ## [0.1.1] - 2026-04-24
 
 ### Fixed
@@ -39,5 +61,6 @@ Initial release.
   and a gitignored `telegramsight/conf.py`; the runtime config path is
   resolved from the `TeleGramSight_CONFIG` environment variable.
 
+[0.2.0]: https://github.com/cedricbonhomme/TeleGramSight/releases/tag/v0.2.0
 [0.1.1]: https://github.com/cedricbonhomme/TeleGramSight/releases/tag/v0.1.1
 [0.1.0]: https://github.com/cedricbonhomme/TeleGramSight/releases/tag/v0.1.0
