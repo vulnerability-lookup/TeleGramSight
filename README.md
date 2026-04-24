@@ -26,12 +26,17 @@ Once installed and configured, invoke the CLI:
 
 ```bash
 $ telegramsight --since 2026-04-23T00:00:00 --until 2026-04-24T00:00:00
+$ telegramsight --since 'yesterday' --until 'today' --no-push
+$ telegramsight --since '2 days ago' --until 'today'
+$ telegramsight --since 1775001600 --until 1776902399
 ```
 
 Arguments:
 
-- `--since` / `--until` — time window bounds. Accept epoch seconds or ISO 8601 timestamps.
-  Defaults to the last 24 hours when omitted, which is the expected cron invocation.
+- `--since` / `--until` — time window bounds. Accept unix-epoch seconds,
+  ISO 8601 timestamps, or natural-language expressions (e.g. `2 days ago`,
+  `yesterday`, `today`, `1 week ago`). Defaults to the last 24 hours when
+  omitted, which is the expected cron invocation.
 - `--page-size` — results per API call (default 100).
 - `--no-push` — dry run: fetch and build sightings and log them, but don't send anything to Vulnerability-Lookup.
 

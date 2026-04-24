@@ -15,6 +15,7 @@ from datetime import datetime, timedelta, timezone
 from types import ModuleType
 from typing import Any
 
+import dateparser
 import requests
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from pyvulnerabilitylookup import PyVulnerabilityLookup
@@ -73,10 +74,23 @@ def sighting_type(result: dict[str, Any]) -> str:
 
 
 def parse_time(value: str) -> int:
-    """Accept either unix-epoch seconds or an ISO 8601 timestamp; return epoch seconds."""
+    """Parse a time argument into unix-epoch seconds.
+
+    Accepts, in order:
+      - an all-digit unix-epoch seconds value,
+      - an ISO 8601 timestamp,
+      - a natural-language expression like "2 days ago", "yesterday", "today".
+    """
     if value.isdigit():
         return int(value)
-    parsed = datetime.fromisoformat(value)
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        parsed = dateparser.parse(
+            value, settings={"RETURN_AS_TIMEZONE_AWARE": True, "TIMEZONE": "UTC"}
+        )
+        if parsed is None:
+            raise ValueError(f"Could not parse time value: {value!r}")
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=timezone.utc)
     return int(parsed.timestamp())
@@ -155,13 +169,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--since",
         help=(
-            "Start of the time window (epoch seconds or ISO 8601). "
+            "Start of the time window. Accepts unix-epoch seconds, an ISO 8601 "
+            "timestamp, or a natural-language expression like '2 days ago'. "
             "Defaults to 24 hours before --until."
         ),
     )
     parser.add_argument(
         "--until",
-        help="End of the time window (epoch seconds or ISO 8601). Defaults to now.",
+        help=(
+            "End of the time window. Accepts unix-epoch seconds, an ISO 8601 "
+            "timestamp, or a natural-language expression like 'today'. "
+            "Defaults to now."
+        ),
     )
     parser.add_argument(
         "--page-size",

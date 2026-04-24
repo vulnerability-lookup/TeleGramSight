@@ -14,9 +14,10 @@ Initial release.
 - `telegramsight` CLI that pulls vulnerability sightings from a Telegram
   collector API (`POST /api/get_cve_objs`) and pushes them to a
   Vulnerability-Lookup instance via `pyvulnerabilitylookup`.
-- `--since` / `--until` time-window flags accepting unix-epoch seconds or
-  ISO 8601 timestamps; default window is the last 24 hours so the tool is
-  cron-friendly with no arguments.
+- `--since` / `--until` time-window flags accepting unix-epoch seconds,
+  ISO 8601 timestamps, or natural-language expressions (e.g. `2 days ago`,
+  `yesterday`, `today`); default window is the last 24 hours so the tool
+  is cron-friendly with no arguments.
 - `--page-size` flag to tune pagination (default 100).
 - `--no-push` dry-run flag that builds and logs each sighting without
   contacting the Vulnerability-Lookup instance.

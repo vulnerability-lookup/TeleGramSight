@@ -16,6 +16,7 @@ dependencies = [
     "pyvulnerabilitylookup (>=2.0.0,<3.0.0)",
     "requests (>=2.31,<3.0)",
     "cryptography (>=42.0,<46.0)",
+    "dateparser (>=1.2,<2.0)",
 ]
 
 
