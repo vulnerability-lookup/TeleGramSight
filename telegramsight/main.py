@@ -135,9 +135,7 @@ def iter_results(
         page += 1
 
 
-def build_sighting(
-    aessiv: AESSIV, result: dict[str, Any]
-) -> dict[str, Any] | None:
+def build_sighting(aessiv: AESSIV, result: dict[str, Any]) -> dict[str, Any] | None:
     vuln_id = result.get("vuln_id")
     chat_id = result.get("chat_id")
     msg_id = result.get("msg_id")
@@ -150,7 +148,9 @@ def build_sighting(
     try:
         creation_timestamp = datetime.fromisoformat(pub_timestamp)
     except ValueError:
-        logger.debug("Skipping result with unparseable pub_timestamp: %r", pub_timestamp)
+        logger.debug(
+            "Skipping result with unparseable pub_timestamp: %r", pub_timestamp
+        )
         return None
     if creation_timestamp.tzinfo is None:
         creation_timestamp = creation_timestamp.replace(tzinfo=timezone.utc)
@@ -162,9 +162,7 @@ def build_sighting(
     }
 
 
-def push_sighting(
-    client: PyVulnerabilityLookup, sighting: dict[str, Any]
-) -> bool:
+def push_sighting(client: PyVulnerabilityLookup, sighting: dict[str, Any]) -> bool:
     try:
         client.create_sighting(sighting=sighting)
     except Exception as exc:
@@ -227,7 +225,11 @@ def main(argv: list[str] | None = None) -> int:
     since = (
         parse_time(args.since)
         if args.since
-        else int((datetime.fromtimestamp(until, tz=timezone.utc) - DEFAULT_WINDOW).timestamp())
+        else int(
+            (
+                datetime.fromtimestamp(until, tz=timezone.utc) - DEFAULT_WINDOW
+            ).timestamp()
+        )
     )
     if since >= until:
         logger.error("--since (%d) must be earlier than --until (%d)", since, until)
@@ -265,7 +267,11 @@ def main(argv: list[str] | None = None) -> int:
     verb = "Would push" if client is None else "Pushed"
     logger.info(
         "%s %d/%d sightings for window [%d, %d]",
-        verb, pushed, seen, since, until,
+        verb,
+        pushed,
+        seen,
+        since,
+        until,
     )
     return 0
 

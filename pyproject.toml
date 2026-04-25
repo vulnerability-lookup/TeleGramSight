@@ -78,4 +78,6 @@ dev = [
     "mypy (>=1.20.2,<2.0.0)",
     "types-dateparser (>=1.2,<2.0)",
     "types-requests (>=2.31,<3.0)",
+    "pre-commit (>=4.6.0,<5.0.0)",
+    "flake8 (>=7.3.0,<8.0.0)",
 ]
