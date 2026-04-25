@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-04-25
+
+### Fixed
+
+- `tag_poc` Telegram tag now maps to the sighting type
+  `published-proof-of-concept` instead of `proof_of_concept`, to match
+  the vocabulary expected by Vulnerability-Lookup. Sightings pushed by
+  earlier 0.x versions therefore carry the wrong sighting type.
+
 ## [0.2.0] - 2026-04-24
 
 ### Changed
@@ -61,6 +70,7 @@ Initial release.
   and a gitignored `telegramsight/conf.py`; the runtime config path is
   resolved from the `TeleGramSight_CONFIG` environment variable.
 
+[0.3.0]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.3.0
 [0.2.0]: https://github.com/cedricbonhomme/TeleGramSight/releases/tag/v0.2.0
 [0.1.1]: https://github.com/cedricbonhomme/TeleGramSight/releases/tag/v0.1.1
 [0.1.0]: https://github.com/cedricbonhomme/TeleGramSight/releases/tag/v0.1.0

@@ -23,7 +23,7 @@ Single-file flow in `telegramsight/main.py`:
 2. `iter_results()` POSTs to `{api_url}/api/get_cve_objs` with `tag_llm=True`, paginating via `page`/`page_size` until `page * page_size >= total`.
 3. `sighting_type()` maps Telegram tags to a Vulnerability-Lookup sighting type:
    - `tag_wildusage` → `exploited`
-   - `tag_poc` → `proof_of_concept`
+   - `tag_poc` → `published-proof-of-concept`
    - otherwise → `seen`
    (`tag_wildusage` wins when both are set — checked first.)
 4. `build_sighting()` assembles `{type, source=Telegram/{enc}, vulnerability, creation_timestamp}` and `push_sighting()` calls `PyVulnerabilityLookup.create_sighting`.
