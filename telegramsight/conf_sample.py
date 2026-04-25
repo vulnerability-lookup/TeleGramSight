@@ -4,6 +4,10 @@
 api_url = ""
 api_key = ""
 
+# Whether to ask the upstream API to include the message text (`msg=true`)
+# in each result. Set to False to fetch metadata only.
+include_msg = True
+
 vulnerability_lookup_base_url = "https://vulnerability.circl.lu/"
 vulnerability_auth_token = ""
 

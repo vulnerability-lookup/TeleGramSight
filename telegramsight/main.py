@@ -108,6 +108,7 @@ def iter_results(
     since: int,
     until: int,
     page_size: int,
+    include_msg: bool = True,
 ) -> Iterator[dict[str, Any]]:
     endpoint = api_url.rstrip("/") + API_PATH
     session = requests.Session()
@@ -119,7 +120,7 @@ def iter_results(
             "to": until,
             "page": page,
             "page_size": page_size,
-            "msg": True,
+            "msg": include_msg,
             "tag_llm": True,
         }
         response = session.post(endpoint, json=payload, timeout=30)
@@ -253,6 +254,7 @@ def main(argv: list[str] | None = None) -> int:
         since,
         until,
         args.page_size,
+        getattr(config, "include_msg", True),
     ):
         seen += 1
         sighting = build_sighting(aessiv, result)
