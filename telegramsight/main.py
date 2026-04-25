@@ -74,7 +74,7 @@ def sighting_type(result: dict[str, Any]) -> str:
     if result.get("tag_wildusage"):
         return "exploited"
     if result.get("tag_poc"):
-        return "proof_of_concept"
+        return "published-proof-of-concept"
     return "seen"
 
 
