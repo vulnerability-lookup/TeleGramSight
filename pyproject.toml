@@ -33,6 +33,7 @@ Changelog = "https://github.com/cedricbonhomme/TeleGramSight/blob/main/CHANGELOG
 
 [project.scripts]
 telegramsight = "telegramsight.main:main"
+telegramsight-decrypt = "telegramsight.main:decrypt_main"
 
 
 [tool.poetry]

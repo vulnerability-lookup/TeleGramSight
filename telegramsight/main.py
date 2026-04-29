@@ -79,6 +79,18 @@ def encrypt_source_fragment(aessiv: AESSIV, chat_id: Any, msg_id: Any) -> str:
     return base64.urlsafe_b64encode(ciphertext).decode().rstrip("=")
 
 
+def decrypt_source_fragment(aessiv: AESSIV, fragment: str) -> str:
+    """Inverse of `encrypt_source_fragment`.
+
+    Accepts either the raw urlsafe-base64 ciphertext or the full
+    `Telegram/<ct>` source string as it appears on a sighting.
+    """
+    ct_b64 = fragment.split("/", 1)[1] if fragment.startswith("Telegram/") else fragment
+    padded = ct_b64 + "=" * (-len(ct_b64) % 4)
+    ciphertext = base64.urlsafe_b64decode(padded)
+    return aessiv.decrypt(ciphertext, None).decode()
+
+
 def sighting_type(result: dict[str, Any]) -> str:
     if result.get("tag_wildusage"):
         return "exploited"
@@ -363,6 +375,31 @@ def main(argv: list[str] | None = None) -> int:
         since,
         until,
     )
+    return 0
+
+
+def decrypt_main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        prog="telegramsight-decrypt",
+        description=(
+            "Decrypt a source fragment produced by telegramsight using the "
+            "`source_encryption_key` from the configured config file. "
+            "Accepts either the raw urlsafe-base64 ciphertext or the full "
+            "`Telegram/<ct>` source string."
+        ),
+    )
+    parser.add_argument(
+        "fragment", help="Encrypted fragment or full Telegram/<ct> source."
+    )
+    args = parser.parse_args(argv)
+    config = load_config()
+    aessiv = load_aessiv(getattr(config, "source_encryption_key", None))
+    try:
+        plaintext = decrypt_source_fragment(aessiv, args.fragment)
+    except Exception as exc:
+        print(f"Failed to decrypt fragment: {exc}", file=sys.stderr)
+        return 1
+    print(plaintext)
     return 0
 
 

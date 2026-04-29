@@ -46,6 +46,29 @@ Cron example (every hour):
 0 * * * * TeleGramSight_CONFIG=/etc/telegramsight/conf.py /usr/local/bin/telegramsight
 ```
 
+### Decrypting a source fragment
+
+Sightings coming from private channels carry an opaque `Telegram/<ct>` source
+instead of a public `t.me/<user>/<id>` link, and never include the message
+text (see [Security](#security)). When investigating such a sighting, an
+operator who holds the `source_encryption_key` can recover
+the underlying `<chat_id>/<msg_id>` locally with the `telegramsight-decrypt`
+helper:
+
+```bash
+$ telegramsight-decrypt c3vSlSPcOR_UbD4dIs0S5bT1NWHke0QXkPNkd5-4SeE9
+-1001234567890/42
+
+$ telegramsight-decrypt 'Telegram/c3vSlSPcOR_UbD4dIs0S5bT1NWHke0QXkPNkd5-4SeE9'
+-1001234567890/42
+```
+
+The command reads the same config file as `telegramsight` (via
+`TeleGramSight_CONFIG`) and uses the same `source_encryption_key`. Decryption
+happens entirely on the operator's machine — nothing is sent over the network
+— so the privacy guarantee around private channels is preserved: the original
+`chat_id` is only ever revealed to someone who already has the key.
+
 ## Security
 
 Sighting sources are encrypted with AES-SIV (RFC 5297) using the
