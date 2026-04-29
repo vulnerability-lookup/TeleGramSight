@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2026-04-29
+
+### Fixed
+
+- Transient failures talking to the Telegram collector (e.g.
+  `ConnectionResetError(104, 'Connection reset by peer')`, refused
+  connections, timeouts, 5xx responses) now retry automatically up to
+  three times with exponential backoff before any exception bubbles up.
+  If all retries fail (or the upstream returns a non-retryable error
+  like 4xx), the run logs a single `ERROR` line and exits with status
+  3 instead of dumping a traceback — cron-friendly behaviour.
+
 ## [0.5.1] - 2026-04-29
 
 ### Fixed
@@ -136,6 +148,7 @@ Initial release.
   and a gitignored `telegramsight/conf.py`; the runtime config path is
   resolved from the `TeleGramSight_CONFIG` environment variable.
 
+[0.5.2]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.5.2
 [0.5.1]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.5.1
 [0.5.0]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.5.0
 [0.4.0]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.4.0

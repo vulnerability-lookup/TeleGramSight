@@ -21,6 +21,8 @@ import dateparser
 import requests
 from cryptography.hazmat.primitives.ciphers.aead import AESSIV
 from pyvulnerabilitylookup import PyVulnerabilityLookup
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 logger = logging.getLogger("telegramsight")
 
@@ -109,6 +111,27 @@ def parse_time(value: str) -> int:
     return int(parsed.timestamp())
 
 
+def _build_session() -> requests.Session:
+    """A requests session that retries transient failures.
+
+    Connection resets (the upstream collector occasionally drops the TCP
+    connection mid-handshake) and 5xx responses are retried with
+    exponential backoff before any exception bubbles up to the caller.
+    """
+    retry = Retry(
+        total=3,
+        backoff_factor=1.0,
+        status_forcelist=(500, 502, 503, 504),
+        allowed_methods=frozenset(["GET", "POST"]),
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session = requests.Session()
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
+
+
 def iter_results(
     api_url: str,
     api_key: str,
@@ -118,7 +141,7 @@ def iter_results(
     include_msg: bool = True,
 ) -> Iterator[dict[str, Any]]:
     endpoint = api_url.rstrip("/") + API_PATH
-    session = requests.Session()
+    session = _build_session()
     page = 1
     while True:
         payload = {
@@ -297,23 +320,39 @@ def main(argv: list[str] | None = None) -> int:
 
     pushed = 0
     seen = 0
-    for result in iter_results(
-        config.api_url,
-        config.api_key,
-        since,
-        until,
-        args.page_size,
-        getattr(config, "include_msg", True),
-    ):
-        seen += 1
-        sighting = build_sighting(aessiv, result, include_text)
-        if sighting is None:
-            continue
-        if client is None:
-            logger.info("DRY-RUN would push: %s", sighting)
-            pushed += 1
-        elif push_sighting(client, sighting):
-            pushed += 1
+    try:
+        for result in iter_results(
+            config.api_url,
+            config.api_key,
+            since,
+            until,
+            args.page_size,
+            getattr(config, "include_msg", True),
+        ):
+            seen += 1
+            sighting = build_sighting(aessiv, result, include_text)
+            if sighting is None:
+                continue
+            if client is None:
+                logger.info("DRY-RUN would push: %s", sighting)
+                pushed += 1
+            elif push_sighting(client, sighting):
+                pushed += 1
+    except requests.exceptions.RequestException as exc:
+        # _build_session retries transient failures; anything that escapes
+        # here means the upstream collector is genuinely unreachable or
+        # returned a non-retried error (e.g. 4xx). Log and exit cleanly so
+        # cron doesn't email a stack trace.
+        logger.error(
+            "Upstream Telegram collector unreachable (%s); aborting "
+            "after %d sightings (%d pushed) in window [%d, %d].",
+            exc,
+            seen,
+            pushed,
+            since,
+            until,
+        )
+        return 3
 
     verb = "Would push" if client is None else "Pushed"
     logger.info(
