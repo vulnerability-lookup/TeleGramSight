@@ -9,11 +9,13 @@ import base64
 import importlib.util
 import logging
 import os
+import re
 import sys
 from collections.abc import Iterator
 from datetime import datetime, timedelta, timezone
 from types import ModuleType
 from typing import Any
+from urllib.parse import urlparse
 
 import dateparser
 import requests
@@ -26,6 +28,11 @@ CONFIG_ENV_VAR = "TeleGramSight_CONFIG"
 API_PATH = "/api/get_cve_objs"
 DEFAULT_PAGE_SIZE = 100
 DEFAULT_WINDOW = timedelta(hours=24)
+
+# Telegram public usernames are 5–32 chars, start with a letter, and use only
+# letters/digits/underscore. Anything else in a t.me/<seg> URL — numeric ids,
+# +invite hashes, /c/<id>/ permalinks — is treated as a private channel.
+_PUBLIC_USERNAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{4,31}$")
 
 
 def load_config() -> ModuleType:
@@ -136,7 +143,24 @@ def iter_results(
         page += 1
 
 
-def build_sighting(aessiv: AESSIV, result: dict[str, Any]) -> dict[str, Any] | None:
+def is_public_channel(result: dict[str, Any]) -> bool:
+    """Conservative check: only return True when the channel URL points at a
+    Telegram public username. Any non-username path (numeric chat_id fallback,
+    `+invite_hash`, `/c/<id>/...` permalink, missing field, …) is treated as
+    private — message text from such channels must never be exposed.
+    """
+    channel = result.get("channel")
+    if not isinstance(channel, str):
+        return False
+    segments = [s for s in urlparse(channel).path.split("/") if s]
+    if not segments:
+        return False
+    return bool(_PUBLIC_USERNAME_RE.match(segments[0]))
+
+
+def build_sighting(
+    aessiv: AESSIV, result: dict[str, Any], include_text: bool = False
+) -> dict[str, Any] | None:
     vuln_id = result.get("vuln_id")
     chat_id = result.get("chat_id")
     msg_id = result.get("msg_id")
@@ -155,12 +179,16 @@ def build_sighting(aessiv: AESSIV, result: dict[str, Any]) -> dict[str, Any] | N
         return None
     if creation_timestamp.tzinfo is None:
         creation_timestamp = creation_timestamp.replace(tzinfo=timezone.utc)
-    return {
+    sighting: dict[str, Any] = {
         "type": sighting_type(result),
         "source": f"Telegram/{encrypt_source_fragment(aessiv, chat_id, msg_id)}",
         "vulnerability": vuln_id,
         "creation_timestamp": creation_timestamp,
     }
+    text = result.get("text")
+    if include_text and text and is_public_channel(result):
+        sighting["content"] = text
+    return sighting
 
 
 def push_sighting(client: PyVulnerabilityLookup, sighting: dict[str, Any]) -> bool:
@@ -237,6 +265,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     aessiv = load_aessiv(getattr(config, "source_encryption_key", None))
+    include_text = bool(getattr(config, "include_text", False))
     client = (
         None
         if args.no_push
@@ -257,7 +286,7 @@ def main(argv: list[str] | None = None) -> int:
         getattr(config, "include_msg", True),
     ):
         seen += 1
-        sighting = build_sighting(aessiv, result)
+        sighting = build_sighting(aessiv, result, include_text)
         if sighting is None:
             continue
         if client is None:

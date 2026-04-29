@@ -639,14 +639,14 @@ files = [
 
 [[package]]
 name = "pathspec"
-version = "1.1.0"
+version = "1.1.1"
 description = "Utility library for gitignore style pattern matching of file paths."
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "pathspec-1.1.0-py3-none-any.whl", hash = "sha256:574b128f7456bd899045ccd142dd446af7e6cfd0072d63ad73fbc55fbb4aaa42"},
-    {file = "pathspec-1.1.0.tar.gz", hash = "sha256:f5d7c555da02fd8dde3e4a2354b6aba817a89112fa8f333f7917a2a4834dd080"},
+    {file = "pathspec-1.1.1-py3-none-any.whl", hash = "sha256:a00ce642f577bf7f473932318056212bc4f8bfdf53128c78bbd5af0b9b20b189"},
+    {file = "pathspec-1.1.1.tar.gz", hash = "sha256:17db5ecd524104a120e173814c90367a96a98d07c45b2e10c2f3919fff91bf5a"},
 ]
 
 [package.extras]
@@ -771,21 +771,21 @@ files = [
 
 [[package]]
 name = "pyvulnerabilitylookup"
-version = "2.19.0"
+version = "4.4.0"
 description = "Python CLI and module for Vulnerability Lookup"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "pyvulnerabilitylookup-2.19.0-py3-none-any.whl", hash = "sha256:42955989ef81645dafcfe9173375b130cfdbbc04253b51d629ff6a7c0b9d4146"},
-    {file = "pyvulnerabilitylookup-2.19.0.tar.gz", hash = "sha256:0a5aeaedc52266ef2c33b248ab13f3faee23113fd298d54a2772e503025383bd"},
+    {file = "pyvulnerabilitylookup-4.4.0-py3-none-any.whl", hash = "sha256:05df55d09a1c4b81fdabcb5ef97df09534ed7286910647627ab615ee7d102ca9"},
+    {file = "pyvulnerabilitylookup-4.4.0.tar.gz", hash = "sha256:cbcba50f96758239f3ddcd930a4e8c00256c3a78c3dbc8db81d5b73b34ed06a0"},
 ]
 
 [package.dependencies]
-requests = ">=2.32.5"
+requests = ">=2.33.1"
 
 [package.extras]
-docs = ["Sphinx (>=9.0.4) ; python_version >= \"3.11\""]
+docs = ["Sphinx (>=9.1) ; python_version >= \"3.12\""]
 
 [[package]]
 name = "pyyaml"
@@ -1177,14 +1177,14 @@ zstd = ["backports-zstd (>=1.0.0) ; python_version < \"3.14\""]
 
 [[package]]
 name = "virtualenv"
-version = "21.2.4"
+version = "21.3.0"
 description = "Virtual Python Environment builder"
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
 files = [
-    {file = "virtualenv-21.2.4-py3-none-any.whl", hash = "sha256:29d21e941795206138d0f22f4e45ff7050e5da6c6472299fb7103318763861ac"},
-    {file = "virtualenv-21.2.4.tar.gz", hash = "sha256:b294ef68192638004d72524ce7ef303e9d0cf5a44c95ce2e54a7500a6381cada"},
+    {file = "virtualenv-21.3.0-py3-none-any.whl", hash = "sha256:4d28ee41f6d9ec8f1f00cd472b9ffbcedda1b3d3b9a575b5c94a2d004fd51bd7"},
+    {file = "virtualenv-21.3.0.tar.gz", hash = "sha256:733750db978ec95c2d8eb4feadaa57091002bce404cb39ba69899cf7bd28944e"},
 ]
 
 [package.dependencies]
@@ -1197,4 +1197,4 @@ typing-extensions = {version = ">=4.13.2", markers = "python_version < \"3.11\""
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "c49eb22e584c53ffa02fe7db78d1ee7ea91ba655cced12f60196b9c2751e4ed9"
+content-hash = "62066ab3096cba958d6bd6e465cc89c26cd51c2909e7b03f761fb531ecebb807"

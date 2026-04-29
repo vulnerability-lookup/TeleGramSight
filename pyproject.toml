@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "TeleGramSight"
-version = "0.3.0"
+version = "0.4.0"
 description = "Retrieve vulnerability sightings collected from Telegram and push them to a Vulnerability-Lookup instance."
 authors = [
     {name = "Cédric Bonhomme", email = "cedric.bonhomme@circl.lu"}
@@ -18,7 +18,7 @@ dynamic = ["classifiers"]
 
 requires-python = ">=3.10,<4.0"
 dependencies = [
-    "pyvulnerabilitylookup (>=2.0.0,<3.0.0)",
+    "pyvulnerabilitylookup (>=2.0.0,<5.0.0)",
     "requests (>=2.31,<3.0)",
     "cryptography (>=46.0.7,<47.0)",
     "dateparser (>=1.2,<2.0)",
@@ -47,8 +47,8 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"
 ]
 

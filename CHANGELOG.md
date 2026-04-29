@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-04-25
+
+### Added
+
+- `include_msg` config option (default `True`) — controls whether the
+  upstream Telegram collector is asked to include message text in each
+  result (`msg=true` payload field). Set to `False` for metadata-only
+  responses.
+- `include_text` config option (default `False`) — when `True`, attaches
+  the message text to each sighting pushed to Vulnerability-Lookup as
+  the `content` field. **Privacy guarantee:** text is *only* attached
+  for public channels (those whose `t.me` URL points at a Telegram
+  username matching `^[A-Za-z][A-Za-z0-9_]{4,31}$`). Messages from
+  private channels — identified by a numeric chat_id in the URL,
+  `/c/<id>/...` permalinks, `+invite_hash` invite links, or a missing
+  channel field — are never sent regardless of the flag.
+
+### Changed
+
+- Widened the `pyvulnerabilitylookup` dependency constraint from
+  `>=2.0.0,<3.0.0` to `>=2.0.0,<5.0.0`.
+
+### Fixed
+
+- Python classifier list in `pyproject.toml` was duplicating
+  `Programming Language :: Python :: 3.12` three times; now correctly
+  lists 3.10 through 3.14.
+
 ## [0.3.0] - 2026-04-25
 
 ### Fixed
@@ -70,6 +98,7 @@ Initial release.
   and a gitignored `telegramsight/conf.py`; the runtime config path is
   resolved from the `TeleGramSight_CONFIG` environment variable.
 
+[0.4.0]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.4.0
 [0.3.0]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.3.0
 [0.2.0]: https://github.com/cedricbonhomme/TeleGramSight/releases/tag/v0.2.0
 [0.1.1]: https://github.com/cedricbonhomme/TeleGramSight/releases/tag/v0.1.1

@@ -8,6 +8,13 @@ api_key = ""
 # in each result. Set to False to fetch metadata only.
 include_msg = True
 
+# When True, attach the message text to each sighting pushed to
+# Vulnerability-Lookup. Text is *only* attached for public channels
+# (those whose t.me URL points at a Telegram username); messages from
+# private channels — identified by a numeric chat_id in the URL,
+# missing username, or an invite-link form — are never sent.
+include_text = False
+
 vulnerability_lookup_base_url = "https://vulnerability.circl.lu/"
 vulnerability_auth_token = ""
 
