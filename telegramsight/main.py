@@ -179,14 +179,29 @@ def build_sighting(
         return None
     if creation_timestamp.tzinfo is None:
         creation_timestamp = creation_timestamp.replace(tzinfo=timezone.utc)
+    # Public channels get the canonical t.me link as the source so
+    # Vulnerability-Lookup users can click straight through to the message.
+    # Private channels (and any case where the channel URL says "public" but
+    # `username` is missing or malformed) fall back to the deterministic
+    # AES-SIV ciphertext under the `Telegram/` prefix.
+    public = is_public_channel(result)
+    username = result.get("username")
+    if (
+        public
+        and isinstance(username, str)
+        and _PUBLIC_USERNAME_RE.match(username)
+    ):
+        source = f"https://t.me/{username}/{msg_id}"
+    else:
+        source = f"Telegram/{encrypt_source_fragment(aessiv, chat_id, msg_id)}"
     sighting: dict[str, Any] = {
         "type": sighting_type(result),
-        "source": f"Telegram/{encrypt_source_fragment(aessiv, chat_id, msg_id)}",
+        "source": source,
         "vulnerability": vuln_id,
         "creation_timestamp": creation_timestamp,
     }
     text = result.get("text")
-    if include_text and text and is_public_channel(result):
+    if include_text and text and public:
         sighting["content"] = text
     return sighting
 

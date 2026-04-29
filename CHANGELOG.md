@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-04-25
+
+### Changed
+
+- Sighting `source` for **public** channels is now the canonical
+  `https://t.me/<username>/<msg_id>` link — clickable from
+  Vulnerability-Lookup straight to the originating Telegram message.
+  Private channels (and any case where the channel URL says "public"
+  but the `username` field is missing or doesn't match the Telegram
+  username rule) still get the deterministic `Telegram/<aes-siv>`
+  identifier so chat ids and message ids are never exposed in the
+  clear. The asymmetry is intentional: public sources double as a
+  human-followable link, private sources stay opaque.
+
+  **Migration note:** sources for public-channel sightings produced by
+  0.4.x were AES-SIV ciphertexts; from 0.5.0 they're plaintext URLs.
+  Previously-pushed sightings will not dedupe against new ones for the
+  same public message.
+
 ## [0.4.0] - 2026-04-25
 
 ### Added
@@ -98,6 +117,7 @@ Initial release.
   and a gitignored `telegramsight/conf.py`; the runtime config path is
   resolved from the `TeleGramSight_CONFIG` environment variable.
 
+[0.5.0]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.5.0
 [0.4.0]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.4.0
 [0.3.0]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.3.0
 [0.2.0]: https://github.com/cedricbonhomme/TeleGramSight/releases/tag/v0.2.0
