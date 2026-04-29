@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2026-04-29
+
+### Fixed
+
+- **Privacy:** message text could be attached to a sighting whose
+  `source` had fallen back to the encrypted `Telegram/<aes-siv>` form.
+  This happened when the channel URL passed the public-username regex
+  but the `username` field returned by the upstream collector was
+  missing, empty, `None`, or otherwise didn't validate. The source
+  correctly became opaque, but the `content` gate was looser than the
+  source gate, so message text from such channels was being pushed to
+  Vulnerability-Lookup. The two gates are now structural rather than
+  conditional: the line that attaches `content` lives inside the same
+  branch that builds the public `https://t.me/<username>/<msg_id>`
+  source, so a hidden source can never carry text. Operators running
+  0.5.0 with `include_text = True` should audit their
+  Vulnerability-Lookup instance for sightings whose `source` matches
+  `Telegram/%` and whose `content` field is set, and remove them.
+
 ## [0.5.0] - 2026-04-25
 
 ### Changed
@@ -117,6 +136,7 @@ Initial release.
   and a gitignored `telegramsight/conf.py`; the runtime config path is
   resolved from the `TeleGramSight_CONFIG` environment variable.
 
+[0.5.1]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.5.1
 [0.5.0]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.5.0
 [0.4.0]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.4.0
 [0.3.0]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.3.0
