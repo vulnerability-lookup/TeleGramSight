@@ -30,6 +30,8 @@ Single-file flow in `telegramsight/main.py`:
    - `{enc}` is AES-SIV(`"{chat_id}/{msg_id}"`) under `source_encryption_key` with no nonce and no associated data, serialized as urlsafe-base64 of `SIV (16B) || ciphertext` (padding stripped). This is *deterministic on purpose*: the same Telegram message always produces the same source string, so Vulnerability-Lookup can dedupe on the ciphertext without decrypting. Key may be 32/48/64 raw bytes (AES-128/192/256-SIV). If you ever need to change the key, all previously-pushed sightings become undiscoverable under the new key.
    - `creation_timestamp` must be a timezone-aware `datetime` (not the raw ISO string from the upstream API) — `create_sighting` inspects `.tzinfo`. Naive timestamps are coerced to UTC.
 
+`decrypt_source_fragment()` is the inverse of `encrypt_source_fragment()` and backs the `telegramsight-decrypt` entry point (see CLI contract). It exists so an operator holding the key can resolve a private-channel sighting back to `{chat_id}/{msg_id}` for investigation. Decryption is local-only — nothing is sent over the network — which is what preserves the privacy invariant: the original `chat_id` is only ever exposed to a key-holder.
+
 ## Config split — do not break this
 
 The Telegram endpoint URL is deliberately kept out of source control:
@@ -41,10 +43,17 @@ When adding new config keys, add them to `conf_sample.py` with empty/default val
 
 ## CLI contract
 
+Two entry points are registered in `[project.scripts]`:
+
 `telegramsight [--since <t>] [--until <t>] [--page-size N] [--no-push]`
 
 - `--since` / `--until` accept unix-epoch seconds, ISO 8601 timestamps, or natural-language expressions (`2 days ago`, `yesterday`, `today`). With no args the tool runs over the last 24 hours — that is the intended cron shape, so don't change the default window without updating the README's cron example.
 - `--no-push` is a dry run: build and log each sighting but don't instantiate `PyVulnerabilityLookup` or call out to the instance.
+
+`telegramsight-decrypt <fragment>` (→ `decrypt_main`)
+
+- Operator-side helper for resolving a private-channel sighting back to `{chat_id}/{msg_id}`. Reads the same `TeleGramSight_CONFIG` file and uses the same `source_encryption_key` as the main CLI.
+- `<fragment>` accepts either the raw urlsafe-base64 ciphertext or the full `Telegram/<ct>` string copied from a sighting source.
 
 ## Release process
 
