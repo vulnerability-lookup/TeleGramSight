@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-04-30
+
+### Added
+
+- `telegramsight-decrypt <fragment>` CLI helper, registered as a second
+  entry point in `[project.scripts]`. Lets an operator holding the
+  `source_encryption_key` recover the original `{chat_id}/{msg_id}`
+  behind an opaque `Telegram/<ct>` sighting source for investigation.
+  Accepts either the raw urlsafe-base64 ciphertext or the full
+  `Telegram/<ct>` string copied from a sighting. Reads the same
+  `TeleGramSight_CONFIG` file as the main CLI and runs entirely
+  locally — no network calls — so the privacy guarantee around
+  private-channel chat ids is preserved: only key-holders can resolve
+  them.
+
 ## [0.5.2] - 2026-04-29
 
 ### Fixed
@@ -148,6 +163,7 @@ Initial release.
   and a gitignored `telegramsight/conf.py`; the runtime config path is
   resolved from the `TeleGramSight_CONFIG` environment variable.
 
+[0.6.0]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.6.0
 [0.5.2]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.5.2
 [0.5.1]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.5.1
 [0.5.0]: https://github.com/vulnerability-lookup/TeleGramSight/releases/tag/v0.5.0
