@@ -20,7 +20,7 @@ requires-python = ">=3.10,<4.0"
 dependencies = [
     "pyvulnerabilitylookup (>=2.0.0,<5.0.0)",
     "requests (>=2.31,<3.0)",
-    "cryptography (>=46.0.7,<47.0)",
+    "cryptography (>=50.0.0,<51.0)",
     "dateparser (>=1.2,<2.0)",
 ]
 
